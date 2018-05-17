@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=""UTF-8" >
+
+<title>子网划分工具-子网划分器</title>
+
+</head>
+<body class="guibowebindex articleNews">
+<div class="header">
+
+<div class="guiboweb">
+	<div class="title">  <h1>子网划分工具 </h1></div>
+	<script>
+var beanmsg={ "invalidemail": "Please enter a valid email address.", "input_url":"Please enter a valid webpage url/domain","empty_domain":"Please enter a  domain name","invalid_accessKey":"Invalid Access Keyword","valid_website":"Please specify a valid website to monitor","domain_name":"Domain Name ","invalid_url":"Enter a valid url","empty_accessKey":"Please Enter Access Keyword","input_location":"Please Select the Location"};  //No I18N
+$(document).ready(function() { //No I18N
+	$('#tabs div').hide(); //No I18N
+	$('#tabs div:nth-child(3)').show(); //No I18N
+	$('#tabs ul li:nth-child(1)').removeClass('active'); //No I18N
+	$('#tabs ul li:nth-child(3)').removeClass('active'); //No I18N
+	$('#tabs ul li:nth-child(2)').addClass('active'); //No I18N
+	$('#tabs ul li a').click(function(){  //No I18N
+		$('#tabs ul li').removeClass('active'); //No I18N
+		$(this).parent().addClass('active');  //No I18N
+		var currentTab = $(this).attr('href');   //No I18N
+		$('#tabs div').hide(); //No I18N
+		$(currentTab).show(); //No I18N
+		return false; //No I18N
+	});
+});
+</script>
+
+<script type="text/javascript" src="ipv4-subnet.js"></script>
+
+<script type="text/javascript" src="jquery.js"></script>
+
+<p class="toolheading" style="margin-top: 10px"></p>
+<table width="620">
+    <tbody>
+        <tr>
+            <td width="293">
+            <table width="293">
+                <tbody>
+                    <tr>
+                        <td height="50" width="78">
+                        <p align="left"><span class="subnettoolstext">网络地址块</span></p>
+                        </td>
+                        <td height="50" width="206">
+                        <p align="left"><input id="addressBlock" class="subnetcalctextbox" onchange="calculateAndUpdateValues('setAddressBlock', 'design');" value="172.16.5.0/24" type="text" /></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="50" width="78">
+                        <p align="left"><span class="subnettoolstext">子网掩码</span></p>
+                        </td>
+                        <td height="50" width="206">
+                        <p align="left"><select id="subnetMask" class="subnetcalcdropdownbox" onchange="calculateAndUpdateValues('setSubnetMask', 'design');">
+                        <option value="255.255.255.0">255.255.255.0/24</option>
+                        <option value="255.255.255.128">255.255.255.128/25</option>
+                        <option value="255.255.255.192">255.255.255.192/26</option>
+                        <option value="255.255.255.224">255.255.255.224/27</option>
+                        <option value="255.255.255.240">255.255.255.240/28</option>
+                        <option value="255.255.255.248">255.255.255.248/29</option>
+                        <option value="255.255.255.252" selected="selected">255.255.255.252/30</option>
+                        <option value="255.255.255.254">255.255.255.254/31</option>
+                        <option value="255.255.255.255">255.255.255.255/32</option>
+                        </select></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="78">
+                        <p align="left"><span class="subnettoolstext">主机号/子网</span></p>
+                        </td>
+                        <td width="206">
+                        <p align="left"><select id="hostBits" class="subnetcalcdropdownbox" onchange="calculateAndUpdateValues('setNoOfHosts', 'design');">
+                        <option value="0">1</option>
+                        <option value="1">2</option>
+                        <option value="2" selected="selected">4</option>
+                        <option value="3">8</option>
+                        <option value="4">16</option>
+                        <option value="5">32</option>
+                        <option value="6">64</option>
+                        <option value="7">128</option>
+                        <option value="8">256</option>
+                        </select></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="50" width="78">
+                        <p align="left"><span class="subnettoolstext">子网数目</span></p>
+                        </td>
+                        <td width="206">
+                        <p align="left"><select id="subnetBits" class="subnetcalcdropdownbox" onchange="calculateAndUpdateValues('setNoOfSubnets', 'design');">
+                        <option value="0">1</option>
+                        <option value="1">2</option>
+                        <option value="2">4</option>
+                        <option value="3">8</option>
+                        <option value="4">16</option>
+                        <option value="5">32</option>
+                        <option value="6" selected="selected">64</option>
+                        <option value="7">128</option>
+                        <option value="8">256</option>
+                        </select></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </td>
+            <td width="317">
+            <table width="317">
+                <tbody>
+                    <tr>
+                        <td height="50" width="96">
+                        <p align="left"><span class="subnettoolstext">主机地址范围</span></p>
+                        </td>
+                        <td height="50" width="212">
+                        <div id="addressRange_cidr" class="subnetcalcdivbox" style="background-color: #ddd">172.16.5.1&nbsp;&nbsp;-&nbsp;&nbsp;172.16.5.2</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="50" width="96">
+                        <p align="left"><span class="subnettoolstext">广播地址</span></p>
+                        </td>
+                        <td height="50" width="212">
+                        <div id="broadcast_cidr" class="subnetcalcdivbox" style="background-color: #ddd">172.16.5.3</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="50" width="96">
+                        <p align="left"><span class="subnettoolstext">掩码通配符</span></p>
+                        </td>
+                        <td height="50" width="212">
+                        <div id="wildcard_cidr" class="subnetcalcdivbox" style="background-color: #ddd">0.0.0.3</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td height="50" width="96">
+                        <p align="left"><span class="subnettoolstext">CIDR 表示法</span></p>
+                        </td>
+                        <td height="50" width="212">
+                        <div id="cidrNotation" class="subnetcalcdivbox" style="background-color: #ddd">172.16.5.0/30</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p><br />
+　</p>
+<div id="SubnetDetailsDiv" style="display: block; margin-bottom: 5px"><br />
+<div id="tableDiv" style="display: block">
+<div id="newDiv" style="width: 630px; height: 400px; overflow: auto">
+<table id="newtable" class="dynamicTable" width="460">
+    <tbody>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px; font-weight: bold">
+            <p style="text-align: left">子网 ID</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px; font-weight: bold">
+            <p style="text-align: left">子网地址</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px; font-weight: bold">
+            <p style="text-align: left">主机地址范围</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px; font-weight: bold">
+            <p style="text-align: left">广播地址</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">1</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.0</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.1 - 172.16.5.2</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.3</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">2</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.4</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.5 - 172.16.5.6</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.7</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">3</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.8</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.9 - 172.16.5.10</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.11</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">4</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.12</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.13 - 172.16.5.14</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.15</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">5</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.16</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.17 - 172.16.5.18</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.19</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">6</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.20</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.21 - 172.16.5.22</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.23</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">7</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.24</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.25 - 172.16.5.26</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.27</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">8</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.28</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.29 - 172.16.5.30</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.31</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">9</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.32</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.33 - 172.16.5.34</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.35</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">10</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.36</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.37 - 172.16.5.38</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.39</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">11</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.40</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.41 - 172.16.5.42</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.43</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">12</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.44</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.45 - 172.16.5.46</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.47</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">13</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.48</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.49 - 172.16.5.50</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.51</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">14</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.52</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.53 - 172.16.5.54</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.55</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">15</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.56</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.57 - 172.16.5.58</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.59</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">16</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.60</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.61 - 172.16.5.62</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.63</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">17</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.64</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.65 - 172.16.5.66</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.67</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">18</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.68</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.69 - 172.16.5.70</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.71</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">19</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.72</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.73 - 172.16.5.74</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.75</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">20</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.76</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.77 - 172.16.5.78</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.79</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">21</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.80</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.81 - 172.16.5.82</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.83</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">22</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.84</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.85 - 172.16.5.86</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.87</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">23</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.88</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.89 - 172.16.5.90</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.91</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">24</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.92</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.93 - 172.16.5.94</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.95</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">25</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.96</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.97 - 172.16.5.98</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.99</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">26</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.100</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.101 - 172.16.5.102</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.103</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">27</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.104</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.105 - 172.16.5.106</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.107</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">28</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.108</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.109 - 172.16.5.110</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.111</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">29</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.112</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.113 - 172.16.5.114</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.115</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">30</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.116</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.117 - 172.16.5.118</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.119</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">31</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.120</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.121 - 172.16.5.122</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.123</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">32</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.124</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.125 - 172.16.5.126</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.127</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">33</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.128</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.129 - 172.16.5.130</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.131</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">34</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.132</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.133 - 172.16.5.134</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.135</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">35</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.136</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.137 - 172.16.5.138</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.139</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">36</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.140</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.141 - 172.16.5.142</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.143</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">37</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.144</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.145 - 172.16.5.146</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.147</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">38</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.148</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.149 - 172.16.5.150</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.151</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">39</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.152</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.153 - 172.16.5.154</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.155</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">40</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.156</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.157 - 172.16.5.158</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.159</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">41</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.160</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.161 - 172.16.5.162</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.163</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">42</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.164</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.165 - 172.16.5.166</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.167</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">43</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.168</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.169 - 172.16.5.170</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.171</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">44</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.172</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.173 - 172.16.5.174</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.175</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">45</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.176</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.177 - 172.16.5.178</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.179</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">46</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.180</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.181 - 172.16.5.182</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.183</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">47</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.184</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.185 - 172.16.5.186</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.187</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">48</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.188</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.189 - 172.16.5.190</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.191</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">49</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.192</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.193 - 172.16.5.194</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.195</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">50</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.196</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.197 - 172.16.5.198</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.199</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">51</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.200</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.201 - 172.16.5.202</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.203</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">52</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.204</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.205 - 172.16.5.206</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.207</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">53</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.208</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.209 - 172.16.5.210</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.211</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">54</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.212</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.213 - 172.16.5.214</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.215</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">55</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.216</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.217 - 172.16.5.218</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.219</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">56</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.220</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.221 - 172.16.5.222</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.223</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">57</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.224</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.225 - 172.16.5.226</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.227</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">58</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.228</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.229 - 172.16.5.230</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.231</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">59</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.232</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.233 - 172.16.5.234</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.235</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">60</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.236</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.237 - 172.16.5.238</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.239</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">61</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.240</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.241 - 172.16.5.242</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.243</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">62</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.244</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.245 - 172.16.5.246</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.247</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">63</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.248</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.249 - 172.16.5.250</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.251</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 47px">
+            <p style="text-align: left">64</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 94px">
+            <p style="text-align: left">172.16.5.252</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 136px">
+            <p style="text-align: left">172.16.5.253 - 172.16.5.254</p>
+            </td>
+            <td class="dynamicTableCell" style="line-height: 40px; width: 165px">
+            <p style="text-align: left">172.16.5.255</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+<p align="left"><br />
+　</p>
+</div>
+<p>　</p>
+<p>　</p>
+<p align="left">子网划分器<br />
+当有一段时间，当网络变得太大而无法管理，是因为网络太拥挤。最有效来解决这个网络拥塞问题之一是方法的打破 TCP/IP 网络分成更小、 更易于管理的块。划分网络的实践被称为子网划分。<br />
+需要一个 IPv4 子网计算器工具<br />
+每个子网都有一个IP地址来表示它，这些子网通过路由器互连。路由器需要网络地址和子网掩码，以找出是否将传入的 IP 数据包路由到任何它的子网。有时，当你不得不考虑多少子网不同参数应该和多少主机应在子网很难先执行网络计算的工作。<br />
+这个子网计算器是一个方便的工具，对于任何给定的网络地址块寻找可能的子网的数量。你可以选择组合子网和主机，适合您的网络的子网数目，广播的地址的主机地址范围为任何给定的子网掩码。通常可以执行IP计算</p>	</div>
+
+</body>
+</html>
